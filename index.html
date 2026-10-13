@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="mn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ангийн вэбсайт</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=PT+Serif:wght@400;700&family=PT+Sans:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#FAF8F2;
+    --paper-line:#DCD6C4;
+    --ink:#22302A;
+    --ink-soft:#5B6660;
+    --green:#2F6B4F;
+    --green-dark:#1E4C37;
+    --yellow:#E7B84C;
+    --red:#B4432F;
+    --card:#FFFFFF;
+    --radius:6px;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:
+      linear-gradient(var(--paper) 0px, var(--paper) 27px, var(--paper-line) 28px) 0 38px/100% 28px repeat-y,
+      var(--paper);
+    color:var(--ink);
+    font-family:'PT Sans', sans-serif;
+    line-height:1.5;
+    min-height:100vh;
+  }
+  h1,h2,h3{
+    font-family:'PT Serif', serif;
+    margin:0 0 .4em 0;
+    color:var(--green-dark);
+  }
+  .wrap{max-width:980px;margin:0 auto;padding:0 20px 60px;}
+ 
+  header.top{
+    background:var(--green-dark);
+    color:#F4EFDF;
+    padding:28px 20px 22px;
+    border-bottom:6px solid var(--yellow);
+  }
+  header.top .inner{max-width:980px;margin:0 auto;display:flex;align-items:baseline;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+  header.top h1{color:#F4EFDF;font-size:1.7rem;letter-spacing:.3px;}
+  header.top input#className{
+    background:transparent;border:none;border-bottom:1px dashed rgba(244,239,223,.5);
+    color:#F4EFDF;font-family:'PT Serif',serif;font-size:1.7rem;font-weight:700;
+    padding:0 2px;max-width:520px;width:100%;
+  }
+  header.top input#className:focus{outline:none;border-bottom-color:var(--yellow);}
+  header.top .sub{font-size:.9rem;color:#C9D8CE;}
+ 
+  nav.tabs{
+    display:flex;gap:4px;margin:26px 0 0;padding:0;list-style:none;
+    border-bottom:2px solid var(--green-dark);
+  }
+  nav.tabs button{
+    font-family:'PT Serif',serif;font-size:1rem;background:none;border:none;cursor:pointer;
+    padding:10px 18px;color:var(--ink-soft);border-radius:var(--radius) var(--radius) 0 0;
+    position:relative;top:2px;
+  }
+  nav.tabs button.active{
+    background:var(--card);color:var(--green-dark);font-weight:700;
+    border:2px solid var(--green-dark);border-bottom:2px solid var(--card);
+  }
+ 
+  section.panel{display:none;background:var(--card);border:1px solid var(--paper-line);
+    border-top:none;padding:26px;border-radius:0 0 var(--radius) var(--radius);
+    box-shadow:0 2px 0 rgba(34,48,42,.03);}
+  section.panel.active{display:block;}
+ 
+  .row{display:flex;gap:14px;flex-wrap:wrap;align-items:flex-end;margin-bottom:18px;}
+  .field{display:flex;flex-direction:column;gap:4px;}
+  .field label{font-size:.82rem;color:var(--ink-soft);}
+  input[type=text], input[type=date], input[type=number], select, textarea{
+    font-family:'PT Sans',sans-serif;font-size:.95rem;padding:8px 10px;
+    border:1px solid #C9C2AC;border-radius:var(--radius);background:#FFFEFB;color:var(--ink);
+  }
+  textarea{min-height:70px;resize:vertical;font-family:inherit;}
+  button.btn{
+    font-family:'PT Sans',sans-serif;font-weight:700;font-size:.9rem;
+    background:var(--green);color:#fff;border:none;border-radius:var(--radius);
+    padding:9px 16px;cursor:pointer;
+  }
+  button.btn:hover{background:var(--green-dark);}
+  button.btn.secondary{background:transparent;color:var(--green-dark);border:1px solid var(--green-dark);}
+  button.btn.secondary:hover{background:#EEF3EF;}
+  button.link-del{background:none;border:none;color:var(--red);cursor:pointer;font-size:.85rem;padding:2px 6px;}
+ 
+  table{width:100%;border-collapse:collapse;margin-top:10px;}
+  th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--paper-line);font-size:.92rem;}
+  th{color:var(--ink-soft);font-weight:700;border-bottom:2px solid var(--green-dark);}
+  tr:last-child td{border-bottom:none;}
+ 
+  .period-grid{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px;}
+  .period-chip{
+    border:1px solid #C9C2AC;border-radius:20px;padding:5px 12px;font-size:.85rem;cursor:pointer;
+    background:#FFFEFB;user-select:none;
+  }
+  .period-chip.selected{background:var(--yellow);border-color:var(--yellow);font-weight:700;color:var(--green-dark);}
+ 
+  .empty{color:var(--ink-soft);font-style:italic;padding:14px 0;}
+ 
+  .hw-card{border:1px solid var(--paper-line);border-radius:var(--radius);padding:14px;margin-top:14px;
+    display:flex;gap:14px;}
+  .hw-card img{width:96px;height:96px;object-fit:cover;border-radius:4px;border:1px solid var(--paper-line);}
+  .hw-card .meta{font-size:.8rem;color:var(--ink-soft);margin-bottom:4px;}
+  .hw-card .body{flex:1;}
+  .hw-card .title{font-family:'PT Serif',serif;font-weight:700;margin-bottom:2px;}
+ 
+  .stat-cards{display:flex;gap:14px;flex-wrap:wrap;margin:16px 0 6px;}
+  .stat-card{background:#F4F1E7;border:1px solid var(--paper-line);border-radius:var(--radius);
+    padding:14px 18px;min-width:120px;text-align:center;}
+  .stat-card .num{font-family:'PT Serif',serif;font-size:1.8rem;color:var(--green-dark);font-weight:700;}
+  .stat-card .lbl{font-size:.78rem;color:var(--ink-soft);}
+ 
+  details.settings{margin-top:26px;border-top:1px dashed var(--paper-line);padding-top:14px;}
+  details.settings summary{cursor:pointer;color:var(--ink-soft);font-size:.85rem;}
+  .quarter-row{display:flex;gap:10px;align-items:center;margin-top:8px;flex-wrap:wrap;}
+  .quarter-row span{width:70px;font-size:.85rem;color:var(--ink-soft);}
+ 
+  .bar-row{display:flex;align-items:center;gap:10px;margin-bottom:6px;}
+  .bar-row .lbl{width:110px;font-size:.85rem;flex-shrink:0;}
+  .bar-track{flex:1;background:#EFEAD9;border-radius:20px;height:14px;overflow:hidden;}
+  .bar-fill{background:var(--green);height:100%;border-radius:20px;}
+  .bar-row .count{width:24px;text-align:right;font-size:.85rem;color:var(--ink-soft);}
+ 
+  footer.note{max-width:980px;margin:20px auto 0;padding:0 20px;font-size:.78rem;color:var(--ink-soft);}
+  @media (max-width:640px){
+    .hw-card{flex-direction:column;}
+    .hw-card img{width:100%;height:160px;}
+  }
+</style>
+</head>
+<body>
+ 
+<header class="top">
+  <div class="inner">
+    <input id="className" value="Манай ангийн вэбсайт" />
+  </div>
+  <div class="sub" style="margin-top:6px;">Ирц бүртгэл · Гэрийн даалгавар · Тайлан</div>
+</header>
+ 
+<div class="wrap">
+  <nav class="tabs">
+    <button data-tab="attendance" class="active">Ирц бүртгэл</button>
+    <button data-tab="homework">Гэрийн даалгавар</button>
+    <button data-tab="report">Тайлан</button>
+    <button data-tab="students">Сурагчид</button>
+  </nav>
+ 
+  <!-- ATTENDANCE -->
+  <section class="panel active" id="panel-attendance">
+    <h2>Ирц бүртгэх</h2>
+    <div class="row">
+      <div class="field">
+        <label>Огноо</label>
+        <input type="date" id="att-date">
+      </div>
+      <div class="field">
+        <label>Сурагч</label>
+        <select id="att-student"></select>
+      </div>
+      <div class="field" style="flex:1;min-width:220px;">
+        <label>Хоцорсон / тасалсан хичээлийн цаг (олноор сонгож болно)</label>
+        <div class="period-grid" id="att-periods"></div>
+      </div>
+      <div class="field">
+        <label>Тэмдэглэл (сонголтоор)</label>
+        <input type="text" id="att-note" placeholder="ж: өвчтэй, шалтгаангүй...">
+      </div>
+      <button class="btn" id="att-add">Бүртгэх</button>
+    </div>
+ 
+    <h3>Бүртгэлийн жагсаалт</h3>
+    <table id="att-table">
+      <thead><tr><th>Огноо</th><th>Сурагч</th><th>Хичээлийн цаг</th><th>Тэмдэглэл</th><th></th></tr></thead>
+      <tbody></tbody>
+    </table>
+    <div class="empty" id="att-empty" style="display:none;">Одоогоор бүртгэл алга.</div>
+  </section>
+ 
+  <!-- HOMEWORK -->
+  <section class="panel" id="panel-homework">
+    <h2>Гэрийн даалгавар нэмэх</h2>
+    <div class="row">
+      <div class="field">
+        <label>Огноо</label>
+        <input type="date" id="hw-date">
+      </div>
+      <div class="field">
+        <label>Хичээл</label>
+        <input type="text" id="hw-subject" placeholder="ж: Математик">
+      </div>
+      <div class="field" style="flex:1;min-width:220px;">
+        <label>Гарчиг</label>
+        <input type="text" id="hw-title" placeholder="Даалгаврын гарчиг">
+      </div>
+    </div>
+    <div class="row">
+      <div class="field" style="flex:1;">
+        <label>Дэлгэрэнгүй</label>
+        <textarea id="hw-text" placeholder="Даалгаврын тайлбар бичих..."></textarea>
+      </div>
+      <div class="field">
+        <label>Зураг оруулах (сонголтоор)</label>
+        <input type="file" id="hw-image" accept="image/*">
+      </div>
+      <button class="btn" id="hw-add">Нийтлэх</button>
+    </div>
+ 
+    <h3>Өгсөн даалгаврууд</h3>
+    <div id="hw-list"></div>
+    <div class="empty" id="hw-empty" style="display:none;">Одоогоор даалгавар алга.</div>
+  </section>
+ 
+  <!-- REPORT -->
+  <section class="panel" id="panel-report">
+    <h2>Ирцийн тайлан</h2>
+    <div class="row">
+      <div class="field">
+        <label>Сурагч</label>
+        <select id="rep-student"><option value="all">Бүх сурагч</option></select>
+      </div>
+    </div>
+ 
+    <div class="stat-cards" id="rep-quarter-cards"></div>
+ 
+    <div class="stat-cards">
+      <div class="stat-card">
+        <div class="num" id="rep-year-total">0</div>
+        <div class="lbl">Бүтэн жилийн нийт хоцролт/тасалсан</div>
+      </div>
+    </div>
+ 
+    <h3>Хичээлийн цаг тус бүрээр</h3>
+    <div id="rep-periods"></div>
+ 
+    <details class="settings">
+      <summary>Улирлын огнооны тохиргоо</summary>
+      <div id="quarter-settings"></div>
+      <button class="btn secondary" id="quarter-save" style="margin-top:10px;">Тохиргоог хадгалах</button>
+    </details>
+  </section>
+ 
+  <!-- STUDENTS -->
+  <section class="panel" id="panel-students">
+    <h2>Сурагчдын жагсаалт</h2>
+    <div class="row">
+      <div class="field">
+        <label>Сурагчийн нэр</label>
+        <input type="text" id="st-name" placeholder="Нэр">
+      </div>
+      <button class="btn" id="st-add">Нэмэх</button>
+    </div>
+    <table>
+      <thead><tr><th>#</th><th>Нэр</th><th></th></tr></thead>
+      <tbody id="st-table"></tbody>
+    </table>
+  </section>
+</div>
+ 
+<footer class="note">Мэдээлэл нь энэ компьютерийн browser localStorage-д хадгалагдана (зөвхөн энэ төхөөрөмж дээр харагдана).</footer>
+ 
+<script>
+const LS_KEY = 'classSiteData_v1';
+ 
+function loadData(){
+  const raw = localStorage.getItem(LS_KEY);
+  if(raw){
+    try{ return JSON.parse(raw); }catch(e){}
+  }
+  return {
+    className:'Манай ангийн вэбсайт',
+    students:[{id:1,name:'Сурагч 1'},{id:2,name:'Сурагч 2'}],
+    attendance:[],
+    homework:[],
+    quarters:[
+      {name:'I улирал', start:'2026-09-01', end:'2026-11-15'},
+      {name:'II улирал', start:'2026-11-16', end:'2027-01-25'},
+      {name:'III улирал', start:'2027-02-01', end:'2027-04-05'},
+      {name:'IV улирал', start:'2027-04-06', end:'2027-05-30'}
+    ],
+    nextStudentId:3,
+    nextAttId:1,
+    nextHwId:1
+  };
+}
+let data = loadData();
+function save(){ localStorage.setItem(LS_KEY, JSON.stringify(data)); }
+ 
+// ---------- Tabs ----------
+document.querySelectorAll('nav.tabs button').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('nav.tabs button').forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll('section.panel').forEach(p=>p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('panel-'+btn.dataset.tab).classList.add('active');
+  });
+});
+ 
+// ---------- Class name ----------
+const classNameInput = document.getElementById('className');
+classNameInput.value = data.className;
+classNameInput.addEventListener('input', ()=>{ data.className = classNameInput.value; save(); });
+ 
+// ---------- Students ----------
+function renderStudentSelects(){
+  const attSel = document.getElementById('att-student');
+  const repSel = document.getElementById('rep-student');
+  attSel.innerHTML = data.students.map(s=>`<option value="${s.id}">${escapeHtml(s.name)}</option>`).join('');
+  repSel.innerHTML = '<option value="all">Бүх сурагч</option>' +
+    data.students.map(s=>`<option value="${s.id}">${escapeHtml(s.name)}</option>`).join('');
+}
+function renderStudentTable(){
+  const tbody = document.getElementById('st-table');
+  if(data.students.length===0){
+    tbody.innerHTML = '<tr><td colspan="3" class="empty">Сурагч алга.</td></tr>';
+    return;
+  }
+  tbody.innerHTML = data.students.map((s,i)=>`
+    <tr>
+      <td>${i+1}</td>
+      <td>${escapeHtml(s.name)}</td>
+      <td><button class="link-del" data-id="${s.id}">Устгах</button></td>
+    </tr>`).join('');
+  tbody.querySelectorAll('.link-del').forEach(b=>{
+    b.addEventListener('click', ()=>{
+      const id = Number(b.dataset.id);
+      data.students = data.students.filter(s=>s.id!==id);
+      data.attendance = data.attendance.filter(a=>a.studentId!==id);
+      save(); renderAll();
+    });
+  });
+}
+document.getElementById('st-add').addEventListener('click', ()=>{
+  const nameInput = document.getElementById('st-name');
+  const name = nameInput.value.trim();
+  if(!name) return;
+  data.students.push({id:data.nextStudentId++, name});
+  nameInput.value='';
+  save(); renderAll();
+});
+ 
+// ---------- Attendance ----------
+const PERIODS = [1,2,3,4,5,6,7,8];
+let selectedPeriods = new Set();
+function renderPeriodChips(){
+  const grid = document.getElementById('att-periods');
+  grid.innerHTML = PERIODS.map(p=>`<div class="period-chip" data-p="${p}">${p}-р цаг</div>`).join('');
+  grid.querySelectorAll('.period-chip').forEach(chip=>{
+    chip.addEventListener('click', ()=>{
+      const p = Number(chip.dataset.p);
+      if(selectedPeriods.has(p)){ selectedPeriods.delete(p); chip.classList.remove('selected'); }
+      else{ selectedPeriods.add(p); chip.classList.add('selected'); }
+    });
+  });
+}
+document.getElementById('att-add').addEventListener('click', ()=>{
+  const date = document.getElementById('att-date').value;
+  const studentId = Number(document.getElementById('att-student').value);
+  const note = document.getElementById('att-note').value.trim();
+  if(!date || !studentId || selectedPeriods.size===0){
+    alert('Огноо, сурагч, дор хаяж нэг хичээлийн цагийг сонгоно уу.');
+    return;
+  }
+  data.attendance.push({
+    id:data.nextAttId++, date, studentId,
+    periods:Array.from(selectedPeriods).sort((a,b)=>a-b), note
+  });
+  selectedPeriods.clear();
+  document.querySelectorAll('.period-chip').forEach(c=>c.classList.remove('selected'));
+  document.getElementById('att-note').value='';
+  save(); renderAll();
+});
+function renderAttendanceTable(){
+  const tbody = document.querySelector('#att-table tbody');
+  const emptyMsg = document.getElementById('att-empty');
+  const rows = [...data.attendance].sort((a,b)=> b.date.localeCompare(a.date));
+  if(rows.length===0){
+    tbody.innerHTML=''; emptyMsg.style.display='block'; return;
+  }
+  emptyMsg.style.display='none';
+  tbody.innerHTML = rows.map(r=>{
+    const student = data.students.find(s=>s.id===r.studentId);
+    return `<tr>
+      <td>${r.date}</td>
+      <td>${student?escapeHtml(student.name):'(устгагдсан)'}</td>
+      <td>${r.periods.map(p=>p+'-р цаг').join(', ')}</td>
+      <td>${escapeHtml(r.note||'-')}</td>
+      <td><button class="link-del" data-id="${r.id}">Устгах</button></td>
+    </tr>`;
+  }).join('');
+  tbody.querySelectorAll('.link-del').forEach(b=>{
+    b.addEventListener('click', ()=>{
+      data.attendance = data.attendance.filter(a=>a.id!==Number(b.dataset.id));
+      save(); renderAll();
+    });
+  });
+}
+ 
+// ---------- Homework ----------
+document.getElementById('hw-add').addEventListener('click', ()=>{
+  const date = document.getElementById('hw-date').value;
+  const subject = document.getElementById('hw-subject').value.trim();
+  const title = document.getElementById('hw-title').value.trim();
+  const text = document.getElementById('hw-text').value.trim();
+  const fileInput = document.getElementById('hw-image');
+  if(!date || !title){
+    alert('Огноо болон гарчгийг бөглөнө үү.');
+    return;
+  }
+  const finish = (imageData)=>{
+    data.homework.push({id:data.nextHwId++, date, subject, title, text, image:imageData||null});
+    document.getElementById('hw-subject').value='';
+    document.getElementById('hw-title').value='';
+    document.getElementById('hw-text').value='';
+    fileInput.value='';
+    save(); renderAll();
+  };
+  if(fileInput.files && fileInput.files[0]){
+    const reader = new FileReader();
+    reader.onload = ()=> finish(reader.result);
+    reader.readAsDataURL(fileInput.files[0]);
+  } else {
+    finish(null);
+  }
+});
+function renderHomework(){
+  const list = document.getElementById('hw-list');
+  const emptyMsg = document.getElementById('hw-empty');
+  const rows = [...data.homework].sort((a,b)=> b.date.localeCompare(a.date));
+  if(rows.length===0){ list.innerHTML=''; emptyMsg.style.display='block'; return; }
+  emptyMsg.style.display='none';
+  list.innerHTML = rows.map(h=>`
+    <div class="hw-card">
+      ${h.image?`<img src="${h.image}" alt="">`:''}
+      <div class="body">
+        <div class="meta">${h.date}${h.subject?' · '+escapeHtml(h.subject):''}</div>
+        <div class="title">${escapeHtml(h.title)}</div>
+        <div>${escapeHtml(h.text||'')}</div>
+        <button class="link-del" data-id="${h.id}" style="margin-top:6px;">Устгах</button>
+      </div>
+    </div>`).join('');
+  list.querySelectorAll('.link-del').forEach(b=>{
+    b.addEventListener('click', ()=>{
+      data.homework = data.homework.filter(h=>h.id!==Number(b.dataset.id));
+      save(); renderAll();
+    });
+  });
+}
+ 
+// ---------- Report ----------
+function inRange(date, start, end){ return date>=start && date<=end; }
+function renderQuarterSettings(){
+  const box = document.getElementById('quarter-settings');
+  box.innerHTML = data.quarters.map((q,i)=>`
+    <div class="quarter-row">
+      <span>${escapeHtml(q.name)}</span>
+      <input type="date" data-i="${i}" data-k="start" value="${q.start}">
+      <span>–</span>
+      <input type="date" data-i="${i}" data-k="end" value="${q.end}">
+    </div>`).join('');
+}
+document.getElementById('quarter-save').addEventListener('click', ()=>{
+  document.querySelectorAll('#quarter-settings input').forEach(inp=>{
+    const i = Number(inp.dataset.i), k = inp.dataset.k;
+    data.quarters[i][k] = inp.value;
+  });
+  save(); renderReport();
+  alert('Улирлын тохиргоог хадгаллаа.');
+});
+document.getElementById('rep-student').addEventListener('change', renderReport);
+ 
+function renderReport(){
+  const sel = document.getElementById('rep-student').value;
+  const relevant = data.attendance.filter(a => sel==='all' ? true : a.studentId===Number(sel));
+ 
+  // quarter cards
+  const qCardsBox = document.getElementById('rep-quarter-cards');
+  qCardsBox.innerHTML = data.quarters.map(q=>{
+    let count = 0;
+    relevant.forEach(a=>{ if(inRange(a.date, q.start, q.end)) count += a.periods.length; });
+    return `<div class="stat-card"><div class="num">${count}</div><div class="lbl">${escapeHtml(q.name)}</div></div>`;
+  }).join('');
+ 
+  // year total
+  let yearTotal = 0;
+  relevant.forEach(a=> yearTotal += a.periods.length);
+  document.getElementById('rep-year-total').textContent = yearTotal;
+ 
+  // by period breakdown
+  const periodCounts = {};
+  PERIODS.forEach(p=> periodCounts[p]=0);
+  relevant.forEach(a=> a.periods.forEach(p=> periodCounts[p] = (periodCounts[p]||0)+1));
+  const maxCount = Math.max(1, ...Object.values(periodCounts));
+  const box = document.getElementById('rep-periods');
+  box.innerHTML = PERIODS.map(p=>{
+    const c = periodCounts[p]||0;
+    const pct = Math.round((c/maxCount)*100);
+    return `<div class="bar-row">
+      <div class="lbl">${p}-р цаг</div>
+      <div class="bar-track"><div class="bar-fill" style="width:${pct}%;"></div></div>
+      <div class="count">${c}</div>
+    </div>`;
+  }).join('');
+}
+ 
+// ---------- Utils ----------
+function escapeHtml(str){
+  return String(str).replace(/[&<>"']/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+}
+function todayStr(){ return new Date().toISOString().slice(0,10); }
+ 
+function renderAll(){
+  renderStudentSelects();
+  renderStudentTable();
+  renderAttendanceTable();
+  renderHomework();
+  renderQuarterSettings();
+  renderReport();
+}
+ 
+// init defaults
+document.getElementById('att-date').value = todayStr();
+document.getElementById('hw-date').value = todayStr();
+renderPeriodChips();
+renderAll();
+</script>;l
+ 
+</body>
+</html>
+ 
