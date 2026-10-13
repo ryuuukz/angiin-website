@@ -6,6 +6,7 @@
 <title>Ангийн вэбсайт</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=PT+Serif:wght@400;700&family=PT+Sans:wght@400;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
   :root{
     --paper:#FAF8F2;
@@ -36,26 +37,30 @@
     color:var(--green-dark);
   }
   .wrap{max-width:980px;margin:0 auto;padding:0 20px 60px;}
- 
+
   header.top{
     background:var(--green-dark);
     color:#F4EFDF;
     padding:28px 20px 22px;
     border-bottom:6px solid var(--yellow);
   }
-  header.top .inner{max-width:980px;margin:0 auto;display:flex;align-items:baseline;justify-content:space-between;flex-wrap:wrap;gap:8px;}
-  header.top h1{color:#F4EFDF;font-size:1.7rem;letter-spacing:.3px;}
+  header.top .inner{max-width:980px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;}
   header.top input#className{
     background:transparent;border:none;border-bottom:1px dashed rgba(244,239,223,.5);
     color:#F4EFDF;font-family:'PT Serif',serif;font-size:1.7rem;font-weight:700;
-    padding:0 2px;max-width:520px;width:100%;
+    padding:0 2px;max-width:520px;width:100%;flex:1;min-width:200px;
   }
   header.top input#className:focus{outline:none;border-bottom-color:var(--yellow);}
+  header.top input#className[readonly]{border-bottom-color:transparent;cursor:default;}
   header.top .sub{font-size:.9rem;color:#C9D8CE;}
- 
+  .userbox{display:flex;align-items:center;gap:10px;font-size:.88rem;color:#F4EFDF;}
+  .userbox .role{background:var(--yellow);color:var(--green-dark);font-weight:700;border-radius:20px;padding:2px 10px;font-size:.78rem;}
+  .userbox button{background:transparent;color:#F4EFDF;border:1px solid rgba(244,239,223,.6);border-radius:var(--radius);padding:5px 12px;cursor:pointer;font-family:inherit;}
+  .userbox button:hover{background:rgba(255,255,255,.12);}
+
   nav.tabs{
     display:flex;gap:4px;margin:26px 0 0;padding:0;list-style:none;
-    border-bottom:2px solid var(--green-dark);
+    border-bottom:2px solid var(--green-dark);flex-wrap:wrap;
   }
   nav.tabs button{
     font-family:'PT Serif',serif;font-size:1rem;background:none;border:none;cursor:pointer;
@@ -66,16 +71,16 @@
     background:var(--card);color:var(--green-dark);font-weight:700;
     border:2px solid var(--green-dark);border-bottom:2px solid var(--card);
   }
- 
+
   section.panel{display:none;background:var(--card);border:1px solid var(--paper-line);
     border-top:none;padding:26px;border-radius:0 0 var(--radius) var(--radius);
     box-shadow:0 2px 0 rgba(34,48,42,.03);}
   section.panel.active{display:block;}
- 
+
   .row{display:flex;gap:14px;flex-wrap:wrap;align-items:flex-end;margin-bottom:18px;}
   .field{display:flex;flex-direction:column;gap:4px;}
   .field label{font-size:.82rem;color:var(--ink-soft);}
-  input[type=text], input[type=date], input[type=number], select, textarea{
+  input[type=text], input[type=password], input[type=date], input[type=number], select, textarea{
     font-family:'PT Sans',sans-serif;font-size:.95rem;padding:8px 10px;
     border:1px solid #C9C2AC;border-radius:var(--radius);background:#FFFEFB;color:var(--ink);
   }
@@ -86,74 +91,120 @@
     padding:9px 16px;cursor:pointer;
   }
   button.btn:hover{background:var(--green-dark);}
+  button.btn:disabled{opacity:.6;cursor:wait;}
   button.btn.secondary{background:transparent;color:var(--green-dark);border:1px solid var(--green-dark);}
   button.btn.secondary:hover{background:#EEF3EF;}
   button.link-del{background:none;border:none;color:var(--red);cursor:pointer;font-size:.85rem;padding:2px 6px;}
- 
+  button.link-edit{background:none;border:none;color:var(--green-dark);cursor:pointer;font-size:.85rem;padding:2px 6px;}
+
   table{width:100%;border-collapse:collapse;margin-top:10px;}
   th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--paper-line);font-size:.92rem;}
   th{color:var(--ink-soft);font-weight:700;border-bottom:2px solid var(--green-dark);}
   tr:last-child td{border-bottom:none;}
- 
+
   .period-grid{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px;}
   .period-chip{
     border:1px solid #C9C2AC;border-radius:20px;padding:5px 12px;font-size:.85rem;cursor:pointer;
     background:#FFFEFB;user-select:none;
   }
   .period-chip.selected{background:var(--yellow);border-color:var(--yellow);font-weight:700;color:var(--green-dark);}
- 
+
   .empty{color:var(--ink-soft);font-style:italic;padding:14px 0;}
- 
+
   .hw-card{border:1px solid var(--paper-line);border-radius:var(--radius);padding:14px;margin-top:14px;
     display:flex;gap:14px;}
   .hw-card img{width:96px;height:96px;object-fit:cover;border-radius:4px;border:1px solid var(--paper-line);}
   .hw-card .meta{font-size:.8rem;color:var(--ink-soft);margin-bottom:4px;}
   .hw-card .body{flex:1;}
   .hw-card .title{font-family:'PT Serif',serif;font-weight:700;margin-bottom:2px;}
- 
+  .hw-card .text{white-space:pre-wrap;}
+
   .stat-cards{display:flex;gap:14px;flex-wrap:wrap;margin:16px 0 6px;}
   .stat-card{background:#F4F1E7;border:1px solid var(--paper-line);border-radius:var(--radius);
     padding:14px 18px;min-width:120px;text-align:center;}
   .stat-card .num{font-family:'PT Serif',serif;font-size:1.8rem;color:var(--green-dark);font-weight:700;}
   .stat-card .lbl{font-size:.78rem;color:var(--ink-soft);}
- 
+
   details.settings{margin-top:26px;border-top:1px dashed var(--paper-line);padding-top:14px;}
   details.settings summary{cursor:pointer;color:var(--ink-soft);font-size:.85rem;}
   .quarter-row{display:flex;gap:10px;align-items:center;margin-top:8px;flex-wrap:wrap;}
   .quarter-row span{width:70px;font-size:.85rem;color:var(--ink-soft);}
- 
+
   .bar-row{display:flex;align-items:center;gap:10px;margin-bottom:6px;}
   .bar-row .lbl{width:110px;font-size:.85rem;flex-shrink:0;}
   .bar-track{flex:1;background:#EFEAD9;border-radius:20px;height:14px;overflow:hidden;}
   .bar-fill{background:var(--green);height:100%;border-radius:20px;}
   .bar-row .count{width:24px;text-align:right;font-size:.85rem;color:var(--ink-soft);}
- 
+
   footer.note{max-width:980px;margin:20px auto 0;padding:0 20px;font-size:.78rem;color:var(--ink-soft);}
+
+  /* Login */
+  #login-view{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;}
+  .login-card{background:var(--card);border:1px solid var(--paper-line);border-top:6px solid var(--yellow);
+    border-radius:var(--radius);padding:30px;width:100%;max-width:380px;box-shadow:0 4px 0 rgba(34,48,42,.04);}
+  .login-card .field{margin-bottom:14px;}
+  .login-card input{width:100%;}
+  .login-card .btn{width:100%;padding:11px;}
+  .login-err{color:var(--red);font-size:.88rem;min-height:1.3em;margin-bottom:8px;}
+  .setup-warn{background:#FFF3D6;border:1px solid var(--yellow);border-radius:var(--radius);padding:10px 12px;font-size:.85rem;margin-bottom:14px;}
+
+  /* Роль */
+  body.role-student .admin-only{display:none !important;}
+
   @media (max-width:640px){
     .hw-card{flex-direction:column;}
     .hw-card img{width:100%;height:160px;}
+    th,td{padding:6px 5px;font-size:.85rem;}
   }
 </style>
 </head>
 <body>
- 
+
+<!-- ============ НЭВТРЭХ ХУУДАС ============ -->
+<div id="login-view" style="display:none;">
+  <form class="login-card" id="login-form">
+    <h2>Ангийн вэбсайт</h2>
+    <p style="margin:0 0 18px;color:var(--ink-soft);font-size:.9rem;">Багшийн өгсөн нэр, нууц үгээрээ нэвтэрнэ үү.</p>
+    <div class="setup-warn" id="setup-warn" style="display:none;">
+      Supabase тохиргоо хийгдээгүй байна. <b>index.html</b> дотрох <code>SUPABASE_URL</code> болон <code>SUPABASE_ANON_KEY</code>-г солино уу.
+    </div>
+    <div class="field">
+      <label>Нэвтрэх нэр</label>
+      <input type="text" id="login-user" autocomplete="username" autocapitalize="none" required>
+    </div>
+    <div class="field">
+      <label>Нууц үг</label>
+      <input type="password" id="login-pass" autocomplete="current-password" required>
+    </div>
+    <div class="login-err" id="login-err"></div>
+    <button class="btn" type="submit" id="login-btn">Нэвтрэх</button>
+  </form>
+</div>
+
+<!-- ============ ҮНДСЭН ХУУДАС ============ -->
+<div id="app-view" style="display:none;">
 <header class="top">
   <div class="inner">
     <input id="className" value="Манай ангийн вэбсайт" />
+    <div class="userbox">
+      <span id="user-name"></span>
+      <span class="role" id="user-role"></span>
+      <button id="logout-btn">Гарах</button>
+    </div>
   </div>
   <div class="sub" style="margin-top:6px;">Ирц бүртгэл · Гэрийн даалгавар · Тайлан</div>
 </header>
- 
+
 <div class="wrap">
   <nav class="tabs">
-    <button data-tab="attendance" class="active">Ирц бүртгэл</button>
+    <button data-tab="attendance" class="admin-only">Ирц бүртгэл</button>
     <button data-tab="homework">Гэрийн даалгавар</button>
     <button data-tab="report">Тайлан</button>
-    <button data-tab="students">Сурагчид</button>
+    <button data-tab="students" class="admin-only">Сурагчид</button>
   </nav>
- 
-  <!-- ATTENDANCE -->
-  <section class="panel active" id="panel-attendance">
+
+  <!-- ATTENDANCE (админ) -->
+  <section class="panel admin-only" id="panel-attendance">
     <h2>Ирц бүртгэх</h2>
     <div class="row">
       <div class="field">
@@ -174,7 +225,7 @@
       </div>
       <button class="btn" id="att-add">Бүртгэх</button>
     </div>
- 
+
     <h3>Бүртгэлийн жагсаалт</h3>
     <table id="att-table">
       <thead><tr><th>Огноо</th><th>Сурагч</th><th>Хичээлийн цаг</th><th>Тэмдэглэл</th><th></th></tr></thead>
@@ -182,174 +233,315 @@
     </table>
     <div class="empty" id="att-empty" style="display:none;">Одоогоор бүртгэл алга.</div>
   </section>
- 
+
   <!-- HOMEWORK -->
   <section class="panel" id="panel-homework">
-    <h2>Гэрийн даалгавар нэмэх</h2>
-    <div class="row">
-      <div class="field">
-        <label>Огноо</label>
-        <input type="date" id="hw-date">
+    <div class="admin-only">
+      <h2>Гэрийн даалгавар нэмэх</h2>
+      <div class="row">
+        <div class="field">
+          <label>Огноо</label>
+          <input type="date" id="hw-date">
+        </div>
+        <div class="field">
+          <label>Хичээл</label>
+          <input type="text" id="hw-subject" placeholder="ж: Математик">
+        </div>
+        <div class="field" style="flex:1;min-width:220px;">
+          <label>Гарчиг</label>
+          <input type="text" id="hw-title" placeholder="Даалгаврын гарчиг">
+        </div>
       </div>
-      <div class="field">
-        <label>Хичээл</label>
-        <input type="text" id="hw-subject" placeholder="ж: Математик">
-      </div>
-      <div class="field" style="flex:1;min-width:220px;">
-        <label>Гарчиг</label>
-        <input type="text" id="hw-title" placeholder="Даалгаврын гарчиг">
+      <div class="row">
+        <div class="field" style="flex:1;">
+          <label>Дэлгэрэнгүй</label>
+          <textarea id="hw-text" placeholder="Даалгаврын тайлбар бичих..."></textarea>
+        </div>
+        <div class="field">
+          <label>Зураг оруулах (сонголтоор)</label>
+          <input type="file" id="hw-image" accept="image/*">
+        </div>
+        <button class="btn" id="hw-add">Нийтлэх</button>
       </div>
     </div>
-    <div class="row">
-      <div class="field" style="flex:1;">
-        <label>Дэлгэрэнгүй</label>
-        <textarea id="hw-text" placeholder="Даалгаврын тайлбар бичих..."></textarea>
-      </div>
-      <div class="field">
-        <label>Зураг оруулах (сонголтоор)</label>
-        <input type="file" id="hw-image" accept="image/*">
-      </div>
-      <button class="btn" id="hw-add">Нийтлэх</button>
-    </div>
- 
-    <h3>Өгсөн даалгаврууд</h3>
+
+    <h2 class="student-title">Өгсөн даалгаврууд</h2>
     <div id="hw-list"></div>
     <div class="empty" id="hw-empty" style="display:none;">Одоогоор даалгавар алга.</div>
   </section>
- 
+
   <!-- REPORT -->
   <section class="panel" id="panel-report">
-    <h2>Ирцийн тайлан</h2>
-    <div class="row">
+    <h2 id="rep-title">Ирцийн тайлан</h2>
+    <div class="row admin-only">
       <div class="field">
         <label>Сурагч</label>
         <select id="rep-student"><option value="all">Бүх сурагч</option></select>
       </div>
     </div>
- 
+
     <div class="stat-cards" id="rep-quarter-cards"></div>
- 
+
     <div class="stat-cards">
       <div class="stat-card">
         <div class="num" id="rep-year-total">0</div>
         <div class="lbl">Бүтэн жилийн нийт хоцролт/тасалсан</div>
       </div>
     </div>
- 
+
     <h3>Хичээлийн цаг тус бүрээр</h3>
     <div id="rep-periods"></div>
- 
-    <details class="settings">
+
+    <h3 style="margin-top:22px;">Бүртгэлүүд</h3>
+    <table>
+      <thead><tr><th>Огноо</th><th>Хичээлийн цаг</th><th>Тэмдэглэл</th></tr></thead>
+      <tbody id="rep-records"></tbody>
+    </table>
+
+    <details class="settings admin-only">
       <summary>Улирлын огнооны тохиргоо</summary>
       <div id="quarter-settings"></div>
       <button class="btn secondary" id="quarter-save" style="margin-top:10px;">Тохиргоог хадгалах</button>
     </details>
   </section>
- 
-  <!-- STUDENTS -->
-  <section class="panel" id="panel-students">
-    <h2>Сурагчдын жагсаалт</h2>
+
+  <!-- STUDENTS (админ) -->
+  <section class="panel admin-only" id="panel-students">
+    <h2>Сурагч нэмэх</h2>
     <div class="row">
       <div class="field">
-        <label>Сурагчийн нэр</label>
-        <input type="text" id="st-name" placeholder="Нэр">
+        <label>Бүтэн нэр</label>
+        <input type="text" id="st-name" placeholder="ж: Бат Болд">
+      </div>
+      <div class="field">
+        <label>Нэвтрэх нэр (латин, жижиг үсэг)</label>
+        <input type="text" id="st-user" placeholder="ж: bat01" autocapitalize="none">
+      </div>
+      <div class="field">
+        <label>Нууц үг (6+ тэмдэгт)</label>
+        <input type="text" id="st-pass" placeholder="нууц үг">
       </div>
       <button class="btn" id="st-add">Нэмэх</button>
     </div>
+    <h3>Сурагчдын жагсаалт</h3>
     <table>
-      <thead><tr><th>#</th><th>Нэр</th><th></th></tr></thead>
+      <thead><tr><th>#</th><th>Нэр</th><th>Нэвтрэх нэр</th><th></th></tr></thead>
       <tbody id="st-table"></tbody>
     </table>
   </section>
 </div>
- 
-<footer class="note">Мэдээлэл нь энэ компьютерийн browser localStorage-д хадгалагдана (зөвхөн энэ төхөөрөмж дээр харагдана).</footer>
- 
+
+<footer class="note">Мэдээлэл Supabase дээр найдвартай хадгалагдах бөгөөд бүх төхөөрөмж дээр хамт харагдана.</footer>
+</div>
+
 <script>
-const LS_KEY = 'classSiteData_v1';
- 
-function loadData(){
-  const raw = localStorage.getItem(LS_KEY);
-  if(raw){
-    try{ return JSON.parse(raw); }catch(e){}
-  }
-  return {
-    className:'Манай ангийн вэбсайт',
-    students:[{id:1,name:'Сурагч 1'},{id:2,name:'Сурагч 2'}],
-    attendance:[],
-    homework:[],
-    quarters:[
-      {name:'I улирал', start:'2026-09-01', end:'2026-11-15'},
-      {name:'II улирал', start:'2026-11-16', end:'2027-01-25'},
-      {name:'III улирал', start:'2027-02-01', end:'2027-04-05'},
-      {name:'IV улирал', start:'2027-04-06', end:'2027-05-30'}
-    ],
-    nextStudentId:3,
-    nextAttId:1,
-    nextHwId:1
-  };
+// ======================================================================
+//  ТОХИРГОО: Supabase -> Project Settings -> API хэсгээс хуулж тавина
+// ======================================================================
+const SUPABASE_URL = 'https://tgwgmmhxdroaelgezotn.supabase.co';
+const SUPABASE_ANON_KEY = 'PASTE_ANON_PUBLIC_KEY_HERE';
+const LOGIN_DOMAIN = 'ang-sait.com';                  // сурагчийн нэвтрэх нэрийн ард нууцаар залгагдана
+
+const CONFIGURED = !SUPABASE_URL.includes('PASTE_') && !SUPABASE_ANON_KEY.includes('PASTE_');
+const sb = CONFIGURED ? supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
+
+let me = null; // {id, role, full_name}
+let state = { className:'', students:[], attendance:[], homework:[], quarters:[] };
+const PERIODS = [1,2,3,4,5,6,7,8];
+let selectedPeriods = new Set();
+const $ = id => document.getElementById(id);
+const isAdmin = () => me && me.role === 'admin';
+
+// ---------- Utils ----------
+function escapeHtml(str){
+  return String(str ?? '').replace(/[&<>"']/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
 }
-let data = loadData();
-function save(){ localStorage.setItem(LS_KEY, JSON.stringify(data)); }
- 
-// ---------- Tabs ----------
-document.querySelectorAll('nav.tabs button').forEach(btn=>{
-  btn.addEventListener('click', ()=>{
-    document.querySelectorAll('nav.tabs button').forEach(b=>b.classList.remove('active'));
-    document.querySelectorAll('section.panel').forEach(p=>p.classList.remove('active'));
-    btn.classList.add('active');
-    document.getElementById('panel-'+btn.dataset.tab).classList.add('active');
+function todayStr(){ return new Date(Date.now() - new Date().getTimezoneOffset()*60000).toISOString().slice(0,10); }
+async function run(promise){
+  const { data, error } = await promise;
+  if(error){ alert('Алдаа: ' + error.message); throw error; }
+  return data;
+}
+function fileToDataUrl(file, maxW = 900){
+  return new Promise((resolve, reject)=>{
+    const img = new Image();
+    const url = URL.createObjectURL(file);
+    img.onload = ()=>{
+      const s = Math.min(1, maxW / img.width);
+      const c = document.createElement('canvas');
+      c.width = Math.round(img.width * s);
+      c.height = Math.round(img.height * s);
+      c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+      URL.revokeObjectURL(url);
+      resolve(c.toDataURL('image/jpeg', 0.75));
+    };
+    img.onerror = reject;
+    img.src = url;
   });
-});
- 
-// ---------- Class name ----------
-const classNameInput = document.getElementById('className');
-classNameInput.value = data.className;
-classNameInput.addEventListener('input', ()=>{ data.className = classNameInput.value; save(); });
- 
-// ---------- Students ----------
-function renderStudentSelects(){
-  const attSel = document.getElementById('att-student');
-  const repSel = document.getElementById('rep-student');
-  attSel.innerHTML = data.students.map(s=>`<option value="${s.id}">${escapeHtml(s.name)}</option>`).join('');
-  repSel.innerHTML = '<option value="all">Бүх сурагч</option>' +
-    data.students.map(s=>`<option value="${s.id}">${escapeHtml(s.name)}</option>`).join('');
 }
-function renderStudentTable(){
-  const tbody = document.getElementById('st-table');
-  if(data.students.length===0){
-    tbody.innerHTML = '<tr><td colspan="3" class="empty">Сурагч алга.</td></tr>';
+
+// ---------- Нэвтрэлт ----------
+function showLogin(){
+  $('app-view').style.display = 'none';
+  $('login-view').style.display = 'flex';
+  $('setup-warn').style.display = CONFIGURED ? 'none' : 'block';
+}
+$('login-form').addEventListener('submit', async e=>{
+  e.preventDefault();
+  if(!CONFIGURED){ return; }
+  const u = $('login-user').value.trim().toLowerCase();
+  const pass = $('login-pass').value;
+  const email = u.includes('@') ? u : `${u}@${LOGIN_DOMAIN}`;
+  $('login-err').textContent = '';
+  $('login-btn').disabled = true;
+  const { error } = await sb.auth.signInWithPassword({ email, password: pass });
+  $('login-btn').disabled = false;
+  if(error){ $('login-err').textContent = 'Нэвтрэх нэр эсвэл нууц үг буруу байна.'; return; }
+  $('login-pass').value = '';
+  await boot();
+});
+$('logout-btn').addEventListener('click', async ()=>{
+  await sb.auth.signOut();
+  me = null;
+  showLogin();
+});
+
+async function boot(){
+  if(!CONFIGURED){ showLogin(); return; }
+  const { data: { session } } = await sb.auth.getSession();
+  if(!session){ showLogin(); return; }
+  const { data: prof, error } = await sb.from('profiles').select('*').eq('id', session.user.id).single();
+  if(error || !prof){
+    await sb.auth.signOut();
+    showLogin();
+    $('login-err').textContent = 'Хэрэглэгчийн мэдээлэл олдсонгүй. Багшдаа хандана уу.';
     return;
   }
-  tbody.innerHTML = data.students.map((s,i)=>`
+  me = prof;
+  document.body.classList.toggle('role-admin', isAdmin());
+  document.body.classList.toggle('role-student', !isAdmin());
+  $('user-name').textContent = me.full_name || me.username || '';
+  $('user-role').textContent = isAdmin() ? 'Админ' : 'Сурагч';
+  $('className').readOnly = !isAdmin();
+  $('login-view').style.display = 'none';
+  $('app-view').style.display = 'block';
+  openTab(isAdmin() ? 'attendance' : 'homework');
+  await loadAll();
+}
+
+// ---------- Өгөгдөл ачаалах ----------
+async function loadAll(){
+  const jobs = [
+    sb.from('settings').select('*').eq('id',1).single(),
+    sb.from('quarters').select('*').order('id'),
+    sb.from('homework').select('*').order('date',{ascending:false}).order('id',{ascending:false}),
+    sb.from('attendance').select('*').order('date',{ascending:false}).order('id',{ascending:false})
+  ];
+  if(isAdmin()) jobs.push(sb.from('profiles').select('*').eq('role','student').order('full_name'));
+  const res = await Promise.all(jobs);
+  res.forEach(r=>{ if(r.error) console.error(r.error); });
+  state.className = res[0].data?.class_name || 'Манай ангийн вэбсайт';
+  state.quarters = res[1].data || [];
+  state.homework = res[2].data || [];
+  state.attendance = res[3].data || [];
+  state.students = isAdmin() ? (res[4].data || []) : [];
+  $('className').value = state.className;
+  renderAll();
+}
+
+// ---------- Tabs ----------
+function openTab(name){
+  document.querySelectorAll('nav.tabs button').forEach(b=>b.classList.toggle('active', b.dataset.tab===name));
+  document.querySelectorAll('section.panel').forEach(p=>p.classList.toggle('active', p.id==='panel-'+name));
+}
+document.querySelectorAll('nav.tabs button').forEach(btn=>{
+  btn.addEventListener('click', ()=> openTab(btn.dataset.tab));
+});
+
+// ---------- Ангийн нэр ----------
+$('className').addEventListener('change', async ()=>{
+  if(!isAdmin()) return;
+  const v = $('className').value.trim() || 'Манай ангийн вэбсайт';
+  await run(sb.from('settings').update({ class_name: v }).eq('id',1));
+  state.className = v;
+});
+
+// ---------- Сурагчид (админ) ----------
+function renderStudentSelects(){
+  if(!isAdmin()) return;
+  const opts = state.students.map(s=>`<option value="${s.id}">${escapeHtml(s.full_name)}</option>`).join('');
+  $('att-student').innerHTML = opts;
+  const prev = $('rep-student').value;
+  $('rep-student').innerHTML = '<option value="all">Бүх сурагч</option>' + opts;
+  if([...$('rep-student').options].some(o=>o.value===prev)) $('rep-student').value = prev;
+}
+function renderStudentTable(){
+  if(!isAdmin()) return;
+  const tbody = $('st-table');
+  if(state.students.length===0){
+    tbody.innerHTML = '<tr><td colspan="4" class="empty">Сурагч алга.</td></tr>';
+    return;
+  }
+  tbody.innerHTML = state.students.map((s,i)=>`
     <tr>
       <td>${i+1}</td>
-      <td>${escapeHtml(s.name)}</td>
-      <td><button class="link-del" data-id="${s.id}">Устгах</button></td>
+      <td>${escapeHtml(s.full_name)}</td>
+      <td>${escapeHtml(s.username||'')}</td>
+      <td>
+        <button class="link-edit" data-act="pass" data-id="${s.id}">Нууц үг солих</button>
+        <button class="link-del" data-act="del" data-id="${s.id}">Устгах</button>
+      </td>
     </tr>`).join('');
-  tbody.querySelectorAll('.link-del').forEach(b=>{
-    b.addEventListener('click', ()=>{
-      const id = Number(b.dataset.id);
-      data.students = data.students.filter(s=>s.id!==id);
-      data.attendance = data.attendance.filter(a=>a.studentId!==id);
-      save(); renderAll();
+  tbody.querySelectorAll('button').forEach(b=>{
+    b.addEventListener('click', async ()=>{
+      const id = b.dataset.id;
+      const st = state.students.find(s=>s.id===id);
+      if(b.dataset.act==='del'){
+        if(!confirm(`"${st.full_name}" сурагч болон түүний бүх ирцийг устгах уу?`)) return;
+        await run(sb.rpc('admin_delete_student', { uid: id }));
+        await loadAll();
+      } else {
+        const pw = prompt(`"${st.full_name}"-ийн шинэ нууц үг (6+ тэмдэгт):`);
+        if(!pw) return;
+        await run(sb.rpc('admin_set_password', { uid: id, new_password: pw }));
+        alert('Нууц үг солигдлоо.');
+      }
     });
   });
 }
-document.getElementById('st-add').addEventListener('click', ()=>{
-  const nameInput = document.getElementById('st-name');
-  const name = nameInput.value.trim();
-  if(!name) return;
-  data.students.push({id:data.nextStudentId++, name});
-  nameInput.value='';
-  save(); renderAll();
+$('st-add').addEventListener('click', async ()=>{
+  const full_name = $('st-name').value.trim();
+  const username = $('st-user').value.trim().toLowerCase();
+  const password = $('st-pass').value;
+  if(!full_name || !username || !password){ alert('Бүх талбарыг бөглөнө үү.'); return; }
+  if(!/^[a-z0-9._-]{3,30}$/.test(username)){ alert('Нэвтрэх нэр: латин жижиг үсэг, тоо, . _ - (3-30 тэмдэгт).'); return; }
+  if(password.length < 6){ alert('Нууц үг хамгийн багадаа 6 тэмдэгт байх ёстой.'); return; }
+  $('st-add').disabled = true;
+  try{
+    const secret = await run(sb.from('admin_secret').select('invite_code').eq('id',1).single());
+    // Админы session-г алдахгүйн тулд түр тусдаа client ашиглана
+    const tmp = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+      auth:{ persistSession:false, autoRefreshToken:false, detectSessionInUrl:false, storageKey:'sb-tmp-create' }
+    });
+    const { error } = await tmp.auth.signUp({
+      email: `${username}@${LOGIN_DOMAIN}`,
+      password,
+      options:{ data:{ full_name, username, invite_code: secret.invite_code } }
+    });
+    if(error){
+      alert(/registered|already/i.test(error.message) ? 'Энэ нэвтрэх нэр аль хэдийн бүртгэлтэй байна.' : 'Алдаа: ' + error.message);
+      return;
+    }
+    $('st-name').value = ''; $('st-user').value = ''; $('st-pass').value = '';
+    await loadAll();
+  } finally {
+    $('st-add').disabled = false;
+  }
 });
- 
-// ---------- Attendance ----------
-const PERIODS = [1,2,3,4,5,6,7,8];
-let selectedPeriods = new Set();
+
+// ---------- Ирц (админ) ----------
 function renderPeriodChips(){
-  const grid = document.getElementById('att-periods');
+  const grid = $('att-periods');
   grid.innerHTML = PERIODS.map(p=>`<div class="period-chip" data-p="${p}">${p}-р цаг</div>`).join('');
   grid.querySelectorAll('.period-chip').forEach(chip=>{
     chip.addEventListener('click', ()=>{
@@ -359,80 +551,71 @@ function renderPeriodChips(){
     });
   });
 }
-document.getElementById('att-add').addEventListener('click', ()=>{
-  const date = document.getElementById('att-date').value;
-  const studentId = Number(document.getElementById('att-student').value);
-  const note = document.getElementById('att-note').value.trim();
-  if(!date || !studentId || selectedPeriods.size===0){
+$('att-add').addEventListener('click', async ()=>{
+  const date = $('att-date').value;
+  const student_id = $('att-student').value;
+  const note = $('att-note').value.trim();
+  if(!date || !student_id || selectedPeriods.size===0){
     alert('Огноо, сурагч, дор хаяж нэг хичээлийн цагийг сонгоно уу.');
     return;
   }
-  data.attendance.push({
-    id:data.nextAttId++, date, studentId,
-    periods:Array.from(selectedPeriods).sort((a,b)=>a-b), note
-  });
+  await run(sb.from('attendance').insert({
+    date, student_id, note: note || null,
+    periods: Array.from(selectedPeriods).sort((a,b)=>a-b)
+  }));
   selectedPeriods.clear();
   document.querySelectorAll('.period-chip').forEach(c=>c.classList.remove('selected'));
-  document.getElementById('att-note').value='';
-  save(); renderAll();
+  $('att-note').value = '';
+  await loadAll();
 });
 function renderAttendanceTable(){
+  if(!isAdmin()) return;
   const tbody = document.querySelector('#att-table tbody');
-  const emptyMsg = document.getElementById('att-empty');
-  const rows = [...data.attendance].sort((a,b)=> b.date.localeCompare(a.date));
-  if(rows.length===0){
-    tbody.innerHTML=''; emptyMsg.style.display='block'; return;
-  }
+  const emptyMsg = $('att-empty');
+  const rows = state.attendance;
+  if(rows.length===0){ tbody.innerHTML=''; emptyMsg.style.display='block'; return; }
   emptyMsg.style.display='none';
   tbody.innerHTML = rows.map(r=>{
-    const student = data.students.find(s=>s.id===r.studentId);
+    const st = state.students.find(s=>s.id===r.student_id);
     return `<tr>
       <td>${r.date}</td>
-      <td>${student?escapeHtml(student.name):'(устгагдсан)'}</td>
+      <td>${st?escapeHtml(st.full_name):'(устгагдсан)'}</td>
       <td>${r.periods.map(p=>p+'-р цаг').join(', ')}</td>
       <td>${escapeHtml(r.note||'-')}</td>
       <td><button class="link-del" data-id="${r.id}">Устгах</button></td>
     </tr>`;
   }).join('');
   tbody.querySelectorAll('.link-del').forEach(b=>{
-    b.addEventListener('click', ()=>{
-      data.attendance = data.attendance.filter(a=>a.id!==Number(b.dataset.id));
-      save(); renderAll();
+    b.addEventListener('click', async ()=>{
+      await run(sb.from('attendance').delete().eq('id', b.dataset.id));
+      await loadAll();
     });
   });
 }
- 
-// ---------- Homework ----------
-document.getElementById('hw-add').addEventListener('click', ()=>{
-  const date = document.getElementById('hw-date').value;
-  const subject = document.getElementById('hw-subject').value.trim();
-  const title = document.getElementById('hw-title').value.trim();
-  const text = document.getElementById('hw-text').value.trim();
-  const fileInput = document.getElementById('hw-image');
-  if(!date || !title){
-    alert('Огноо болон гарчгийг бөглөнө үү.');
-    return;
-  }
-  const finish = (imageData)=>{
-    data.homework.push({id:data.nextHwId++, date, subject, title, text, image:imageData||null});
-    document.getElementById('hw-subject').value='';
-    document.getElementById('hw-title').value='';
-    document.getElementById('hw-text').value='';
-    fileInput.value='';
-    save(); renderAll();
-  };
-  if(fileInput.files && fileInput.files[0]){
-    const reader = new FileReader();
-    reader.onload = ()=> finish(reader.result);
-    reader.readAsDataURL(fileInput.files[0]);
-  } else {
-    finish(null);
+
+// ---------- Гэрийн даалгавар ----------
+$('hw-add').addEventListener('click', async ()=>{
+  const date = $('hw-date').value;
+  const subject = $('hw-subject').value.trim();
+  const title = $('hw-title').value.trim();
+  const body = $('hw-text').value.trim();
+  const fileInput = $('hw-image');
+  if(!date || !title){ alert('Огноо болон гарчгийг бөглөнө үү.'); return; }
+  $('hw-add').disabled = true;
+  try{
+    let image = null;
+    if(fileInput.files && fileInput.files[0]) image = await fileToDataUrl(fileInput.files[0]);
+    await run(sb.from('homework').insert({ date, subject: subject||null, title, body: body||null, image }));
+    $('hw-subject').value=''; $('hw-title').value=''; $('hw-text').value=''; fileInput.value='';
+    await loadAll();
+  } finally {
+    $('hw-add').disabled = false;
   }
 });
 function renderHomework(){
-  const list = document.getElementById('hw-list');
-  const emptyMsg = document.getElementById('hw-empty');
-  const rows = [...data.homework].sort((a,b)=> b.date.localeCompare(a.date));
+  const list = $('hw-list');
+  const emptyMsg = $('hw-empty');
+  const rows = state.homework;
   if(rows.length===0){ list.innerHTML=''; emptyMsg.style.display='block'; return; }
   emptyMsg.style.display='none';
   list.innerHTML = rows.map(h=>`
@@ -441,64 +624,63 @@ function renderHomework(){
       <div class="body">
         <div class="meta">${h.date}${h.subject?' · '+escapeHtml(h.subject):''}</div>
         <div class="title">${escapeHtml(h.title)}</div>
-        <div>${escapeHtml(h.text||'')}</div>
-        <button class="link-del" data-id="${h.id}" style="margin-top:6px;">Устгах</button>
+        <div class="text">${escapeHtml(h.body||'')}</div>
+        <button class="link-del admin-only" data-id="${h.id}" style="margin-top:6px;">Устгах</button>
       </div>
     </div>`).join('');
   list.querySelectorAll('.link-del').forEach(b=>{
-    b.addEventListener('click', ()=>{
-      data.homework = data.homework.filter(h=>h.id!==Number(b.dataset.id));
-      save(); renderAll();
+    b.addEventListener('click', async ()=>{
+      if(!confirm('Энэ даалгаврыг устгах уу?')) return;
+      await run(sb.from('homework').delete().eq('id', b.dataset.id));
+      await loadAll();
     });
   });
 }
- 
-// ---------- Report ----------
+
+// ---------- Тайлан ----------
 function inRange(date, start, end){ return date>=start && date<=end; }
 function renderQuarterSettings(){
-  const box = document.getElementById('quarter-settings');
-  box.innerHTML = data.quarters.map((q,i)=>`
+  if(!isAdmin()) return;
+  $('quarter-settings').innerHTML = state.quarters.map((q,i)=>`
     <div class="quarter-row">
       <span>${escapeHtml(q.name)}</span>
-      <input type="date" data-i="${i}" data-k="start" value="${q.start}">
+      <input type="date" data-i="${i}" data-k="start_date" value="${q.start_date}">
       <span>–</span>
-      <input type="date" data-i="${i}" data-k="end" value="${q.end}">
+      <input type="date" data-i="${i}" data-k="end_date" value="${q.end_date}">
     </div>`).join('');
 }
-document.getElementById('quarter-save').addEventListener('click', ()=>{
+$('quarter-save').addEventListener('click', async ()=>{
+  const rows = state.quarters.map(q=>({...q}));
   document.querySelectorAll('#quarter-settings input').forEach(inp=>{
-    const i = Number(inp.dataset.i), k = inp.dataset.k;
-    data.quarters[i][k] = inp.value;
+    rows[Number(inp.dataset.i)][inp.dataset.k] = inp.value;
   });
-  save(); renderReport();
+  if(rows.some(r=>!r.start_date || !r.end_date)){ alert('Бүх огноог бөглөнө үү.'); return; }
+  await run(sb.from('quarters').upsert(rows));
+  await loadAll();
   alert('Улирлын тохиргоог хадгаллаа.');
 });
-document.getElementById('rep-student').addEventListener('change', renderReport);
- 
+$('rep-student').addEventListener('change', renderReport);
+
 function renderReport(){
-  const sel = document.getElementById('rep-student').value;
-  const relevant = data.attendance.filter(a => sel==='all' ? true : a.studentId===Number(sel));
- 
-  // quarter cards
-  const qCardsBox = document.getElementById('rep-quarter-cards');
-  qCardsBox.innerHTML = data.quarters.map(q=>{
+  const sel = isAdmin() ? $('rep-student').value : 'all';
+  const relevant = state.attendance.filter(a => sel==='all' ? true : a.student_id===sel);
+  $('rep-title').textContent = isAdmin() ? 'Ирцийн тайлан' : 'Миний ирцийн тайлан';
+
+  $('rep-quarter-cards').innerHTML = state.quarters.map(q=>{
     let count = 0;
-    relevant.forEach(a=>{ if(inRange(a.date, q.start, q.end)) count += a.periods.length; });
+    relevant.forEach(a=>{ if(inRange(a.date, q.start_date, q.end_date)) count += a.periods.length; });
     return `<div class="stat-card"><div class="num">${count}</div><div class="lbl">${escapeHtml(q.name)}</div></div>`;
   }).join('');
- 
-  // year total
+
   let yearTotal = 0;
   relevant.forEach(a=> yearTotal += a.periods.length);
-  document.getElementById('rep-year-total').textContent = yearTotal;
- 
-  // by period breakdown
+  $('rep-year-total').textContent = yearTotal;
+
   const periodCounts = {};
   PERIODS.forEach(p=> periodCounts[p]=0);
   relevant.forEach(a=> a.periods.forEach(p=> periodCounts[p] = (periodCounts[p]||0)+1));
   const maxCount = Math.max(1, ...Object.values(periodCounts));
-  const box = document.getElementById('rep-periods');
-  box.innerHTML = PERIODS.map(p=>{
+  $('rep-periods').innerHTML = PERIODS.map(p=>{
     const c = periodCounts[p]||0;
     const pct = Math.round((c/maxCount)*100);
     return `<div class="bar-row">
@@ -507,14 +689,12 @@ function renderReport(){
       <div class="count">${c}</div>
     </div>`;
   }).join('');
+
+  $('rep-records').innerHTML = relevant.length
+    ? relevant.map(r=>`<tr><td>${r.date}</td><td>${r.periods.map(p=>p+'-р цаг').join(', ')}</td><td>${escapeHtml(r.note||'-')}</td></tr>`).join('')
+    : '<tr><td colspan="3" class="empty">Бүртгэл алга.</td></tr>';
 }
- 
-// ---------- Utils ----------
-function escapeHtml(str){
-  return String(str).replace(/[&<>"']/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
-}
-function todayStr(){ return new Date().toISOString().slice(0,10); }
- 
+
 function renderAll(){
   renderStudentSelects();
   renderStudentTable();
@@ -523,14 +703,12 @@ function renderAll(){
   renderQuarterSettings();
   renderReport();
 }
- 
-// init defaults
-document.getElementById('att-date').value = todayStr();
-document.getElementById('hw-date').value = todayStr();
+
+// ---------- Эхлэл ----------
+$('att-date').value = todayStr();
+$('hw-date').value = todayStr();
 renderPeriodChips();
-renderAll();
-</script>;l
- 
+boot();
+</script>
 </body>
 </html>
- 
